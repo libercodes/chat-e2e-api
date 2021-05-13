@@ -1,6 +1,6 @@
 import { Server as ServerIO } from 'socket.io';
 import { createServer } from 'http';
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
 dotenv.config();
 // eslint-disable-next-line import/no-mutable-exports
