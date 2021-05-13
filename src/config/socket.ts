@@ -8,6 +8,7 @@ export let io: ServerIO;
 
 export const initSocketServer = (app: Express.Application) => {
   const server = createServer(app);
+  server.listen(process.env.PORT);
   io = new ServerIO(server, {
     cors: {
       origin: process.env.SOCKET_ORIGIN!,

@@ -4,12 +4,12 @@ import logger from '../../helpers/logger.helper';
 import { EnumBESocketEvents, EnumSocketClientEvents } from '../../types/types';
 
 export const streamChatMessages = (socket: Socket, roomCode: string) => {
-  socket.on(EnumBESocketEvents.BE_ADD_MESSAGE, (message: Uint8Array) => {
+  socket.on(EnumBESocketEvents.BE_ADD_MESSAGE, (message: any) => {
     logger.warn(message);
     io.to(roomCode).emit(EnumSocketClientEvents.ADD_MESSAGE, message);
   });
 
-  socket.on(EnumBESocketEvents.BE_DISCONNECT, (data: Uint8Array) => {
+  socket.on(EnumBESocketEvents.BE_DISCONNECT, (data: any) => {
     io.to(roomCode).emit(EnumSocketClientEvents.DISCONNECT, data);
   });
 };
