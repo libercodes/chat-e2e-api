@@ -3,6 +3,8 @@ import { closeChatRoom, createChatRoom, joinChatRoom } from './chat.controller';
 
 const router = express.Router();
 
-router.get('/chat', joinChatRoom);
+router.get('/chat/:code', joinChatRoom);
 router.post('/chat', createChatRoom);
-router.patch('/chat', closeChatRoom);
+router.patch('/chat/:code', closeChatRoom);
+
+export default router;

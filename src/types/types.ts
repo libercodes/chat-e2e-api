@@ -1,10 +1,10 @@
 export enum EnumSocketClientEvents {
-  MESSAGE = 'MESSAGE',
+  ADD_MESSAGE = 'ADD_MESSAGE',
   DISCONNECT = 'DISCONNECT',
 }
 
 export enum EnumBESocketEvents {
-  BE_MESSAGE = 'BE_MESSAGE',
+  BE_ADD_MESSAGE = 'BE_ADD_MESSAGE',
   BE_DISCONNECT = 'BE_DISCONNECT',
 }
 

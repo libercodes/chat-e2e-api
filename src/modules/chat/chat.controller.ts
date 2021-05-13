@@ -33,5 +33,5 @@ export const closeChatRoom: RequestHandler = (req, res, next) => {
   if (!foundRoom) respondNotFound(res, `Chat room with code ${code} not found`);
   foundRoom.endedAt = new Date();
 
-  respondData(res, foundRoom, `Closed chat room with code ${code}`, 200);
+  respondData(res, null, `Closed chat room with code ${code}`, 200);
 };
