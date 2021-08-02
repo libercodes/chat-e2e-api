@@ -6,7 +6,6 @@ import { Store } from './store';
 
 export const createChatRoom: RequestHandler = (req, res, next) => {
   const store = Store.getInstance();
-  console.log(req.body);
 
   const code = v4();
   const { isPublic, name } = req.body;
