@@ -2,25 +2,43 @@ import { Socket } from 'socket.io';
 import { io } from '../../config/socket';
 import logger from '../../helpers/logger.helper';
 import { EnumBESocketEvents, EnumSocketClientEvents } from '../../types/types';
+import { Store } from './store';
 
-export const streamChatMessages = (socket: Socket, roomCode: string) => {
-  socket.on(EnumBESocketEvents.BE_ADD_MESSAGE, (message: any) => {
+const streamChatMessages = (client: Socket, roomCode: string) => {
+  const store = Store.getInstance();
+
+  client.on(EnumBESocketEvents.BE_ADD_MESSAGE, (message: any) => {
     logger.warn(message);
+    store.updateRoomLastActivity(roomCode);
+
     io.to(roomCode).emit(EnumSocketClientEvents.ADD_MESSAGE, message);
   });
 
-  socket.on(EnumBESocketEvents.BE_DISCONNECT, (data: any) => {
+  client.on(EnumBESocketEvents.BE_DISCONNECT, (data: any) => {
     io.to(roomCode).emit(EnumSocketClientEvents.DISCONNECT, data);
+    store.removeParticipant(roomCode);
+    client.leave(roomCode);
+    client.disconnect(true);
   });
 };
 
 export const setClientSocketEvents = () => {
-  io.on('connection', (socket: Socket) => {
-    console.log('socket joined');
-    socket.on('join', (code: string) => {
+  const store = Store.getInstance();
+
+  io.on('connection', (client: Socket) => {
+    client.on('join', (code: string) => {
+      const room = store.findRoom(code);
+
+      if (!room) {
+        client.emit('exception', 'Room not found');
+        return;
+      }
+
       logger.info(`A user joined room with code ${code}`);
-      socket.join(code);
-      streamChatMessages(socket, code);
+      store.addParticipant(code);
+      client.join(code);
+
+      streamChatMessages(client, code);
     });
   });
 };

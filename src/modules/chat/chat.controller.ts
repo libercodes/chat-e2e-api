@@ -2,36 +2,51 @@ import { RequestHandler } from 'express';
 import { v4 } from 'uuid';
 import { respondData, respondNotFound } from '../../helpers/response.helper';
 import { Room } from '../../models/room';
-
-const onGoingRooms: Room[] = [];
+import { Store } from './store';
 
 export const createChatRoom: RequestHandler = (req, res, next) => {
+  const store = Store.getInstance();
+  console.log(req.body);
+
   const code = v4();
+  const { isPublic, name } = req.body;
+  const startedAt = new Date();
 
   const room: Room = {
+    name: name || `Room#${code}`,
     code,
-    startedAt: new Date(),
+    startedAt,
+    isPublic,
+    participants: 0,
+    lastActivity: startedAt,
   };
-  onGoingRooms.push(room);
+  store.addRoom(room);
 
   respondData(res, room, 'Chat room created', 201);
 };
 
-export const joinChatRoom: RequestHandler = (req, res, next) => {
+export const getChatRoom: RequestHandler = (req, res, next) => {
+  const store = Store.getInstance();
   const { code } = req.params;
 
-  const foundRoom = onGoingRooms.find((room: Room) => room.code === code);
+  const foundRoom = store.findRoom(code);
   if (!foundRoom) respondNotFound(res, `Chat room with code ${code} not found`);
 
-  respondData(res, foundRoom, `Joined to chat room with code ${code}`, 200);
+  respondData(res, foundRoom, `Joining to chat room with code ${code}`, 200);
 };
 
 export const closeChatRoom: RequestHandler = (req, res, next) => {
+  const store = Store.getInstance();
   const { code } = req.params;
 
-  const foundRoom = onGoingRooms.find((room: Room) => room.code === code);
+  const foundRoom = store.endRoom(code);
   if (!foundRoom) respondNotFound(res, `Chat room with code ${code} not found`);
-  foundRoom.endedAt = new Date();
 
   respondData(res, null, `Closed chat room with code ${code}`, 200);
+};
+
+export const getPublicRooms: RequestHandler = (req, res, next) => {
+  const store = Store.getInstance();
+  const rooms = store.getPublicRooms();
+  respondData(res, rooms, 'Get public rooms', 200);
 };
